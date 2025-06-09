@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slider CSS - CSS Beyond Styling</title>
+    <style>
+        /* Variables et reset */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #ff9a00 0%, #ff6b6b 100%);
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #b8b8d1;
+            --text-muted: #8f8fb7;
+            --border-radius: 16px;
+            --shadow-md: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --shadow-lg: 0 16px 64px rgba(31, 38, 135, 0.5);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Animation de fond */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            animation: bgMove 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(0.5deg); }
+            66% { transform: translateY(20px) rotate(-0.5deg); }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.4);
+            background: var(--bg-card);
+        }
+
+        /* Container principal du slider */
+        .slider-container {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            margin-bottom: 3rem;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Radio buttons cachés pour contrôler les slides */
+        .slider-input {
+            position: absolute;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Container des slides */
+        .slider {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+        }
+
+        /* Wrapper des slides */
+        .slides-wrapper {
+            display: flex;
+            width: 500%; /* 5 slides × 100% */
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Slides individuels */
+        .slide {
+            width: 20%; /* 100% ÷ 5 slides */
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 2rem;
+            color: white;
+        }
+
+        /* Backgrounds des slides */
+        .slide:nth-child(1) {
+            background: var(--primary-gradient);
+        }
+
+        .slide:nth-child(2) {
+            background: var(--secondary-gradient);
+        }
+
+        .slide:nth-child(3) {
+            background: var(--accent-gradient);
+        }
+
+        .slide:nth-child(4) {
+            background: var(--success-gradient);
+        }
+
+        .slide:nth-child(5) {
+            background: var(--warning-gradient);
+        }
+
+        /* Contenu des slides */
+        .slide-content {
+            max-width: 80%;
+        }
+
+        .slide-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: slideInFromTop 1s ease-out;
+        }
+
+        .slide-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            animation: slideInFromTop 1s ease-out 0.2s both;
+        }
+
+        .slide-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            animation: slideInFromTop 1s ease-out 0.4s both;
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Déplacement des slides selon le radio button sélectionné */
+        #slide1:checked ~ .slider .slides-wrapper {
+            transform: translateX(0%);
+        }
+
+        #slide2:checked ~ .slider .slides-wrapper {
+            transform: translateX(-20%);
+        }
+
+        #slide3:checked ~ .slider .slides-wrapper {
+            transform: translateX(-40%);
+        }
+
+        #slide4:checked ~ .slider .slides-wrapper {
+            transform: translateX(-60%);
+        }
+
+        #slide5:checked ~ .slider .slides-wrapper {
+            transform: translateX(-80%);
+        }
+
+        /* Points de navigation */
+        .slider-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-dot::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .nav-dot:hover {
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(1.2);
+        }
+
+        /* État actif des points */
+        .slider-input:checked + .nav-dot {
+            background: white;
+            transform: scale(1.3);
+        }
+
+        .slider-input:checked + .nav-dot::before {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Flèches de navigation */
+        .slider-arrows {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1rem;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .arrow {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            pointer-events: auto;
+            font-size: 1.5rem;
+            color: white;
+            user-select: none;
+        }
+
+        .arrow:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+
+        .arrow:active {
+            transform: scale(0.95);
+        }
+
+        /* Slider automatique avec animation CSS */
+        .auto-slider {
+            margin-top: 3rem;
+        }
+
+        .auto-slider .slides-wrapper {
+            animation: autoSlide 15s infinite;
+        }
+
+        @keyframes autoSlide {
+            0%, 20% { transform: translateX(0%); }
+            25%, 45% { transform: translateX(-20%); }
+            50%, 70% { transform: translateX(-40%); }
+            75%, 95% { transform: translateX(-60%); }
+            100% { transform: translateX(-80%); }
+        }
+
+        /* Pause de l'animation au hover */
+        .auto-slider:hover .slides-wrapper {
+            animation-play-state: paused;
+        }
+
+        /* Mini sliders de démonstration */
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .demo-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+
+        .demo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .demo-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .demo-card p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        /* Mini slider */
+        .mini-slider {
+            height: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mini-slider .slides-wrapper {
+            width: 300%; /* 3 slides */
+            animation: miniAutoSlide 9s infinite;
+        }
+
+        .mini-slider .slide {
+            width: 33.333%; /* 100% ÷ 3 slides */
+            font-size: 0.9rem;
+        }
+
+        .mini-slider .slide-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .mini-slider .slide-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes miniAutoSlide {
+            0%, 30% { transform: translateX(0%); }
+            35%, 65% { transform: translateX(-33.333%); }
+            70%, 100% { transform: translateX(-66.666%); }
+        }
+
+        /* Parallax effect */
+        .parallax-slider {
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .parallax-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-slow);
+            opacity: 0;
+            transform: scale(1.1);
+        }
+
+        .parallax-slide.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Code snippet */
+        .code-snippet {
+            background: #1e1e2e;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+            color: #a6e3a1;
+            overflow-x: auto;
+        }
+
+        .code-snippet .comment {
+            color: #6c7086;
+        }
+
+        .code-snippet .property {
+            color: #89b4fa;
+        }
+
+        .code-snippet .value {
+            color: #f9e2af;
+        }
+
+        /* Indicateur de progression */
+        .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            width: 0%;
+            border-radius: 2px;
+            transition: width 0.6s ease;
+        }
+
+        #slide1:checked ~ .progress-bar .progress-fill { width: 20%; }
+        #slide2:checked ~ .progress-bar .progress-fill { width: 40%; }
+        #slide3:checked ~ .progress-bar .progress-fill { width: 60%; }
+        #slide4:checked ~ .progress-bar .progress-fill { width: 80%; }
+        #slide5:checked ~ .progress-bar .progress-fill { width: 100%; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .slider {
+                height: 300px;
+            }
+            
+            .slide {
+                padding: 1.5rem;
+            }
+            
+            .slide-title {
+                font-size: 1.5rem;
+            }
+            
+            .slide-description {
+                font-size: 1rem;
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .arrow {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .slider {
+                height: 250px;
+            }
+            
+            .slide {
+                padding: 1rem;
+            }
+            
+            .slide-icon {
+                font-size: 3rem;
+            }
+            
+            .slide-title {
+                font-size: 1.3rem;
+            }
+            
+            .demo-card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Accessibilité */
+        .nav-dot:focus,
+        .arrow:focus {
+            outline: 2px solid rgba(102, 126, 234, 0.6);
+            outline-offset: 2px;
+        }
+
+        /* Animation d'entrée des slides */
+        .slide-content > * {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: none;
+        }
+
+        #slide1:checked ~ .slider .slide:nth-child(1) .slide-content > *,
+        #slide2:checked ~ .slider .slide:nth-child(2) .slide-content > *,
+        #slide3:checked ~ .slider .slide:nth-child(3) .slide-content > *,
+        #slide4:checked ~ .slider .slide:nth-child(4) .slide-content > *,
+        #slide5:checked ~ .slider .slide:nth-child(5) .slide-content > * {
+            animation: slideInFromBottom 0.8s ease-out forwards;
+        }
+
+        #slide1:checked ~ .slider .slide:nth-child(1) .slide-content > *:nth-child(2) { animation-delay: 0.2s; }
+        #slide1:checked ~ .slider .slide:nth-child(1) .slide-content > *:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes slideInFromBottom {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Slider CSS</h1>
+            <p>Carrousels d'images navigables avec points de navigation, flèches, transitions automatiques et animations fluides. Démonstration complète des sliders en CSS pur.</p>
+            <a href="../index.html" class="back-link">← Retour au showcase</a>
+        </div>
+
+        <!-- Slider principal avec navigation manuelle -->
+        <div class="slider-container">
+            <!-- Radio buttons pour contrôler les slides -->
+            <input type="radio" name="slider" id="slide1" class="slider-input" checked>
+            <input type="radio" name="slider" id="slide2" class="slider-input">
+            <input type="radio" name="slider" id="slide3" class="slider-input">
+            <input type="radio" name="slider" id="slide4" class="slider-input">
+            <input type="radio" name="slider" id="slide5" class="slider-input">
+
+            <!-- Container du slider -->
+            <div class="slider">
+                <!-- Flèches de navigation -->
+                <div class="slider-arrows">
+                    <label for="slide1" class="arrow arrow-left">‹</label>
+                    <label for="slide2" class="arrow arrow-right">›</label>
+                </div>
+
+                <!-- Wrapper des slides -->
+                <div class="slides-wrapper">
+                    <!-- Slide 1 -->
+                    <div class="slide">
+                        <div class="slide-content">
+                            <div class="slide-icon">🎨</div>
+                            <div class="slide-title">Design Moderne</div>
+                            <div class="slide-description">Créez des interfaces élégantes avec CSS Grid, Flexbox et des animations fluides pour une expérience utilisateur exceptionnelle.</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2 -->
+                    <div class="slide">
+                        <div class="slide-content">
+                            <div class="slide-icon">⚡</div>
+                            <div class="slide-title">Performance Optimale</div>
+                            <div class="slide-description">Zéro JavaScript, animations GPU-accélérées et chargement instantané pour des sites web ultra-rapides.</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3 -->
+                    <div class="slide">
+                        <div class="slide-content">
+                            <div class="slide-icon">📱</div>
+                            <div class="slide-title">Responsive Design</div>
+                            <div class="slide-description">Adaptation automatique à tous les écrans avec un design mobile-first et des breakpoints intelligents.</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 4 -->
+                    <div class="slide">
+                        <div class="slide-content">
+                            <div class="slide-icon">♿</div>
+                            <div class="slide-title">Accessibilité</div>
+                            <div class="slide-description">Navigation clavier, lecteurs d'écran compatibles et respect des standards WCAG pour tous les utilisateurs.</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5 -->
+                    <div class="slide">
+                        <div class="slide-content">
+                            <div class="slide-icon">🔧</div>
+                            <div class="slide-title">Maintenance Simple</div>
+                            <div class="slide-description">Code CSS propre, variables réutilisables et architecture modulaire pour un développement durable.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Points de navigation -->
+            <div class="slider-nav">
+                <label for="slide1" class="nav-dot"></label>
+                <label for="slide2" class="nav-dot"></label>
+                <label for="slide3" class="nav-dot"></label>
+                <label for="slide4" class="nav-dot"></label>
+                <label for="slide5" class="nav-dot"></label>
+            </div>
+
+            <!-- Barre de progression -->
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Slider automatique -->
+        <div class="slider-container auto-slider">
+            <div class="slider">
+                <div class="slides-wrapper">
+                    <div class="slide">
+                        <div class="slide-content">
+                            <div class="slide-icon">🔄</div>
+                            <div class="slide-title">Slider Automatique</div>
+                            <div class="slide-description">Ce slider change automatiquement toutes les 3 secondes. Passez la souris dessus pour le mettre en pause.</div>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <div class="slide-content">
+                            <div class="slide-icon">⏸️</div>
+                            <div class="slide-title">Pause au Hover</div>
+                            <div class="slide-description">L'animation se met automatiquement en pause lorsque vous survolez le slider avec votre souris.</div>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <div class="slide-content">
+                            <div class="slide-icon">🎬</div>
+                            <div class="slide-title">Animation CSS</div>
+                            <div class="slide-description">Utilise uniquement des keyframes CSS et la propriété animation-play-state pour contrôler la lecture.</div>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <div class="slide-content">
+                            <div class="slide-icon">🔁</div>
+                            <div class="slide-title">Boucle Infinie</div>
+                            <div class="slide-description">Le slider boucle automatiquement et indéfiniment sans interruption visible entre les cycles.</div>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <div class="slide-content">
+                            <div class="slide-icon">✨</div>
+                            <div class="slide-title">Fluide & Naturel</div>
+                            <div class="slide-description">Transitions fluides avec courbes de Bézier personnalisées pour un mouvement naturel et agréable.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Démonstrations additionnelles -->
+        <div class="demo-grid">
+            <!-- Techniques CSS -->
+            <div class="demo-card">
+                <h3>🎯 Techniques CSS</h3>
+                <p>Les sliders CSS utilisent plusieurs techniques avancées pour fonctionner sans JavaScript.</p>
+                
+                <div class="code-snippet">
+<span class="comment">/* Déplacement horizontal */</span>
+<span class="property">.slides-wrapper</span> {
+    <span class="property">display</span>: <span class="value">flex</span>;
+    <span class="property">width</span>: <span class="value">500%</span>; <span class="comment">/* 5 slides */</span>
+    <span class="property">transition</span>: <span class="value">transform 0.6s ease</span>;
+}
+
+<span class="property">#slide2:checked ~ .slider .slides-wrapper</span> {
+    <span class="property">transform</span>: <span class="value">translateX(-20%)</span>;
+}</div>
+
+                <ul style="color: var(--text-secondary); padding-left: 1.5rem; margin-top: 1rem;">
+                    <li>Radio buttons pour l'état</li>
+                    <li>Transform translateX pour le déplacement</li>
+                    <li>Flexbox pour l'alignement</li>
+                    <li>Transitions CSS pour l'animation</li>
+                </ul>
+            </div>
+
+            <!-- Animation automatique -->
+            <div class="demo-card">
+                <h3>🔄 Animation Automatique</h3>
+                <p>Démonstration d'un slider avec animation automatique en boucle.</p>
+                
+                <div class="mini-slider">
+                    <div class="slides-wrapper">
+                        <div class="slide">
+                            <div class="slide-content">
+                                <div class="slide-icon">🚀</div>
+                                <div class="slide-title">Slide 1</div>
+                            </div>
+                        </div>
+                        <div class="slide">
+                            <div class="slide-content">
+                                <div class="slide-icon">🎨</div>
+                                <div class="slide-title">Slide 2</div>
+                            </div>
+                        </div>
+                        <div class="slide">
+                            <div class="slide-content">
+                                <div class="slide-icon">⭐</div>
+                                <div class="slide-title">Slide 3</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-snippet">
+<span class="comment">/* Animation automatique */</span>
+<span class="property">@keyframes autoSlide</span> {
+    <span class="value">0%, 30%</span> { <span class="property">transform</span>: <span class="value">translateX(0%)</span>; }
+    <span class="value">35%, 65%</span> { <span class="property">transform</span>: <span class="value">translateX(-33.333%)</span>; }
+    <span class="value">70%, 100%</span> { <span class="property">transform</span>: <span class="value">translateX(-66.666%)</span>; }
+}</div>
+            </div>
+
+            <!-- Avantages -->
+            <div class="demo-card">
+                <h3>✅ Avantages CSS</h3>
+                <p>Pourquoi choisir un slider CSS par rapport à une solution JavaScript ?</p>
+                
+                <ul style="color: var(--text-secondary); padding-left: 1.5rem; margin: 1rem 0;">
+                    <li><strong>Performance :</strong> Aucun JS à charger</li>
+                    <li><strong>Fluidité :</strong> Animations GPU-accélérées</li>
+                    <li><strong>Simplicité :</strong> Moins de code à maintenir</li>
+                    <li><strong>Compatibilité :</strong> Fonctionne partout</li>
+                    <li><strong>Accessibilité :</strong> Navigation clavier native</li>
+                    <li><strong>SEO :</strong> Contenu directement indexable</li>
+                </ul>
+
+                <div style="background: rgba(17, 153, 142, 0.1); border: 1px solid rgba(17, 153, 142, 0.3); border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+                    <p style="margin: 0; color: var(--text-secondary);"><strong>Note :</strong> Idéal pour du contenu statique ou semi-statique. Pour des besoins complexes, JavaScript reste nécessaire.</p>
+                </div>
+            </div>
+
+            <!-- Personnalisation -->
+            <div class="demo-card">
+                <h3>🎨 Personnalisation</h3>
+                <p>Les sliders CSS sont facilement personnalisables avec des variables CSS et des thèmes.</p>
+                
+                <div class="code-snippet">
+<span class="comment">/* Variables pour personnalisation */</span>
+<span class="property">:root</span> {
+    <span class="property">--slider-height</span>: <span class="value">400px</span>;
+    <span class="property">--slide-transition</span>: <span class="value">0.6s ease</span>;
+    <span class="property">--nav-dot-size</span>: <span class="value">12px</span>;
+    <span class="property">--nav-dot-color</span>: <span class="value">rgba(255,255,255,0.3)</span>;
+}</div>
+
+                <ul style="color: var(--text-secondary); padding-left: 1.5rem; margin-top: 1rem;">
+                    <li>Hauteur et dimensions adaptables</li>
+                    <li>Vitesse de transition configurable</li>
+                    <li>Couleurs et styles personnalisables</li>
+                    <li>Responsive design intégré</li>
+                    <li>Animations sur mesure</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
