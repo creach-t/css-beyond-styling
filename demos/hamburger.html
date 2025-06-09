@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Hamburger CSS - CSS Beyond Styling</title>
+    <style>
+        /* Variables et reset */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #b8b8d1;
+            --text-muted: #8f8fb7;
+            --border-radius: 16px;
+            --shadow-md: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animation de fond */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            animation: bgMove 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(0.5deg); }
+            66% { transform: translateY(20px) rotate(-0.5deg); }
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header principal */
+        .main-header {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .main-header h1 {
+            font-size: 2.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .main-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            transition: var(--transition);
+            margin-bottom: 3rem;
+        }
+
+        .back-link:hover {
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.4);
+            background: var(--bg-card);
+        }
+
+        /* Checkbox caché pour contrôler le menu */
+        .menu-toggle {
+            position: absolute;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Header avec navigation */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+        }
+
+        /* Logo */
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Bouton hamburger */
+        .hamburger {
+            position: relative;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Barres du hamburger */
+        .hamburger-line {
+            width: 25px;
+            height: 3px;
+            background: var(--text-primary);
+            border-radius: 3px;
+            transition: var(--transition-slow);
+            transform-origin: center;
+            position: absolute;
+        }
+
+        .hamburger-line:nth-child(1) {
+            top: 8px;
+        }
+
+        .hamburger-line:nth-child(2) {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .hamburger-line:nth-child(3) {
+            bottom: 8px;
+        }
+
+        /* Animation des barres quand le menu est ouvert */
+        .menu-toggle:checked ~ .header .hamburger .hamburger-line:nth-child(1) {
+            top: 50%;
+            transform: translateY(-50%) rotate(45deg);
+        }
+
+        .menu-toggle:checked ~ .header .hamburger .hamburger-line:nth-child(2) {
+            opacity: 0;
+            transform: translateY(-50%) scale(0);
+        }
+
+        .menu-toggle:checked ~ .header .hamburger .hamburger-line:nth-child(3) {
+            bottom: 50%;
+            transform: translateY(50%) rotate(-45deg);
+        }
+
+        /* Navigation mobile */
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 400px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition-slow);
+            z-index: 999;
+            padding-top: 80px;
+            overflow-y: auto;
+        }
+
+        /* Slide-in du menu */
+        .menu-toggle:checked ~ .mobile-nav {
+            right: 0;
+        }
+
+        /* Overlay du menu */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-slow);
+            z-index: 998;
+        }
+
+        .menu-toggle:checked ~ .menu-overlay {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Items de navigation */
+        .nav-list {
+            list-style: none;
+            padding: 2rem 0;
+        }
+
+        .nav-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link {
+            display: block;
+            padding: 1.5rem 2rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0.1;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover::before {
+            left: 0;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            transform: translateX(10px);
+        }
+
+        /* Icônes des liens */
+        .nav-link::after {
+            content: attr(data-icon);
+            position: absolute;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            opacity: 0.6;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover::after {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.2);
+        }
+
+        /* Section des démos */
+        .demo-section {
+            margin-top: 80px; /* Space for fixed header */
+            padding: 3rem 0;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .demo-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 16px 64px rgba(31, 38, 135, 0.5);
+        }
+
+        .demo-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .demo-card p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        /* Variations du hamburger */
+        .hamburger-demo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            margin: 1rem auto;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .hamburger-demo:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        /* Style 1: Classic */
+        .hamburger-classic {
+            width: 24px;
+            height: 18px;
+            position: relative;
+        }
+
+        .hamburger-classic span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+
+        .hamburger-classic span:nth-child(2) {
+            margin: 6px 0;
+        }
+
+        /* Style 2: Arrow */
+        .hamburger-arrow {
+            width: 24px;
+            height: 24px;
+            position: relative;
+        }
+
+        .hamburger-arrow::before,
+        .hamburger-arrow::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+
+        .hamburger-arrow::before {
+            top: 8px;
+            left: 6px;
+            transform: rotate(45deg);
+        }
+
+        .hamburger-arrow::after {
+            top: 14px;
+            left: 6px;
+            transform: rotate(-45deg);
+        }
+
+        /* Style 3: Spin */
+        .hamburger-spin {
+            width: 24px;
+            height: 18px;
+            position: relative;
+        }
+
+        .hamburger-spin span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: transform 0.5s ease, opacity 0.3s ease;
+            transform-origin: center;
+        }
+
+        .hamburger-spin span:nth-child(2) {
+            margin: 6px 0;
+        }
+
+        /* Effet hover pour les démos */
+        .demo-card:hover .hamburger-classic span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .demo-card:hover .hamburger-classic span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .demo-card:hover .hamburger-classic span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        .demo-card:hover .hamburger-arrow::before {
+            transform: rotate(-45deg);
+        }
+
+        .demo-card:hover .hamburger-arrow::after {
+            transform: rotate(45deg);
+        }
+
+        .demo-card:hover .hamburger-spin span:nth-child(1) {
+            transform: translateY(8px) rotate(135deg);
+        }
+
+        .demo-card:hover .hamburger-spin span:nth-child(2) {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .demo-card:hover .hamburger-spin span:nth-child(3) {
+            transform: translateY(-8px) rotate(-135deg);
+        }
+
+        /* Code snippet */
+        .code-snippet {
+            background: #1e1e2e;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+            color: #a6e3a1;
+            overflow-x: auto;
+        }
+
+        .code-snippet .comment {
+            color: #6c7086;
+        }
+
+        .code-snippet .property {
+            color: #89b4fa;
+        }
+
+        .code-snippet .value {
+            color: #f9e2af;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .header-content {
+                padding: 1rem;
+            }
+            
+            .mobile-nav {
+                width: 90%;
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .demo-card {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-header h1 {
+                font-size: 2rem;
+            }
+            
+            .mobile-nav {
+                width: 100%;
+            }
+            
+            .nav-link {
+                padding: 1rem 1.5rem;
+            }
+        }
+
+        /* Navigation desktop (cachée sur mobile) */
+        .desktop-nav {
+            display: none;
+        }
+
+        @media (min-width: 769px) {
+            .hamburger {
+                display: none;
+            }
+            
+            .desktop-nav {
+                display: flex;
+                gap: 2rem;
+            }
+            
+            .desktop-nav a {
+                color: var(--text-secondary);
+                text-decoration: none;
+                font-weight: 500;
+                transition: var(--transition);
+                padding: 0.5rem 1rem;
+                border-radius: 8px;
+            }
+            
+            .desktop-nav a:hover {
+                color: var(--text-primary);
+                background: rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        /* Accessibilité */
+        .hamburger:focus {
+            outline: 2px solid rgba(102, 126, 234, 0.6);
+            outline-offset: 2px;
+        }
+
+        .nav-link:focus {
+            outline: 2px solid rgba(102, 126, 234, 0.6);
+            outline-offset: -2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Checkbox caché pour contrôler le menu -->
+    <input type="checkbox" id="menu-toggle" class="menu-toggle">
+
+    <!-- Header avec navigation -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">CSS Beyond</div>
+            
+            <!-- Navigation desktop -->
+            <nav class="desktop-nav">
+                <a href="../index.html">Accueil</a>
+                <a href="#demos">Démonstrations</a>
+                <a href="#code">Code</a>
+                <a href="#about">À propos</a>
+            </nav>
+            
+            <!-- Bouton hamburger -->
+            <label for="menu-toggle" class="hamburger">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </label>
+        </div>
+    </header>
+
+    <!-- Navigation mobile -->
+    <nav class="mobile-nav">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="../index.html" class="nav-link" data-icon="🏠">Accueil</a>
+            </li>
+            <li class="nav-item">
+                <a href="calculator.html" class="nav-link" data-icon="🧮">Calculatrice</a>
+            </li>
+            <li class="nav-item">
+                <a href="tabs.html" class="nav-link" data-icon="📑">Système de Tabs</a>
+            </li>
+            <li class="nav-item">
+                <a href="accordion.html" class="nav-link" data-icon="📋">Accordéon</a>
+            </li>
+            <li class="nav-item">
+                <a href="modal.html" class="nav-link" data-icon="🔲">Modal Pop-up</a>
+            </li>
+            <li class="nav-item">
+                <a href="hamburger.html" class="nav-link" data-icon="🍔">Menu Hamburger</a>
+            </li>
+            <li class="nav-item">
+                <a href="slider.html" class="nav-link" data-icon="🖼️">Slider d'Images</a>
+            </li>
+            <li class="nav-item">
+                <a href="tictactoe.html" class="nav-link" data-icon="🎯">Tic-Tac-Toe</a>
+            </li>
+            <li class="nav-item">
+                <a href="toggles.html" class="nav-link" data-icon="🎚️">Toggle Switches</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Overlay du menu -->
+    <label for="menu-toggle" class="menu-overlay"></label>
+
+    <!-- Contenu principal -->
+    <div class="container">
+        <div class="main-header">
+            <h1>Menu Hamburger CSS</h1>
+            <p>Menus mobile animés avec transformation des barres, slide-in latéral et différents styles d'animation. Démonstration complète des menus hamburger en CSS pur.</p>
+            <a href="../index.html" class="back-link">← Retour au showcase</a>
+        </div>
+
+        <section class="demo-section" id="demos">
+            <div class="demo-grid">
+                <!-- Demo 1: Classic Transform -->
+                <div class="demo-card">
+                    <h3>🍔 Classic Transform</h3>
+                    <p>L'animation hamburger classique : les barres du haut et du bas se transforment en croix en passant par le centre, tandis que la barre du milieu disparaît.</p>
+                    
+                    <div class="hamburger-demo">
+                        <div class="hamburger-classic">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+
+                    <div class="code-snippet">
+<span class="comment">/* Animation classique */</span>
+<span class="property">.hamburger span:nth-child(1)</span> {
+    <span class="property">transform</span>: <span class="value">translateY(8px) rotate(45deg)</span>;
+}
+
+<span class="property">.hamburger span:nth-child(2)</span> {
+    <span class="property">opacity</span>: <span class="value">0</span>;
+}
+
+<span class="property">.hamburger span:nth-child(3)</span> {
+    <span class="property">transform</span>: <span class="value">translateY(-8px) rotate(-45deg)</span>;
+}</div>
+                </div>
+
+                <!-- Demo 2: Arrow Style -->
+                <div class="demo-card">
+                    <h3>➡️ Arrow Style</h3>
+                    <p>Style flèche inversée : les barres se transforment en flèche pointant vers la gauche, idéal pour les menus qui glissent depuis la droite.</p>
+                    
+                    <div class="hamburger-demo">
+                        <div class="hamburger-arrow"></div>
+                    </div>
+
+                    <div class="code-snippet">
+<span class="comment">/* Style flèche */</span>
+<span class="property">.hamburger-arrow::before</span> {
+    <span class="property">transform</span>: <span class="value">rotate(-45deg)</span>;
+}
+
+<span class="property">.hamburger-arrow::after</span> {
+    <span class="property">transform</span>: <span class="value">rotate(45deg)</span>;
+}</div>
+                </div>
+
+                <!-- Demo 3: Spin Animation -->
+                <div class="demo-card">
+                    <h3>🌀 Spin Animation</h3>
+                    <p>Animation avec rotation : les barres tournent de 135 degrés pour former une croix, créant un effet de rotation fluide et élégant.</p>
+                    
+                    <div class="hamburger-demo">
+                        <div class="hamburger-spin">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+
+                    <div class="code-snippet">
+<span class="comment">/* Animation avec rotation */</span>
+<span class="property">.hamburger-spin span:nth-child(1)</span> {
+    <span class="property">transform</span>: <span class="value">translateY(8px) rotate(135deg)</span>;
+}
+
+<span class="property">.hamburger-spin span:nth-child(3)</span> {
+    <span class="property">transform</span>: <span class="value">translateY(-8px) rotate(-135deg)</span>;
+}</div>
+                </div>
+
+                <!-- Demo 4: Slide Menu -->
+                <div class="demo-card">
+                    <h3>📱 Slide Menu</h3>
+                    <p>Menu qui glisse depuis le côté droit avec overlay et backdrop-filter. Utilisez le bouton hamburger en haut de page pour tester !</p>
+                    
+                    <div style="background: var(--bg-secondary); border-radius: 8px; padding: 1rem; text-align: center; margin: 1rem 0;">
+                        <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">👆 Testez le menu en haut de page</p>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Le menu slide avec overlay fonctionne sur cette page</p>
+                    </div>
+
+                    <div class="code-snippet">
+<span class="comment">/* Menu slide-in */</span>
+<span class="property">.mobile-nav</span> {
+    <span class="property">right</span>: <span class="value">-100%</span>;
+    <span class="property">transition</span>: <span class="value">all 0.5s cubic-bezier(0.4, 0, 0.2, 1)</span>;
+}
+
+<span class="property">.menu-toggle:checked ~ .mobile-nav</span> {
+    <span class="property">right</span>: <span class="value">0</span>;
+}</div>
+                </div>
+
+                <!-- Demo 5: Advanced Features -->
+                <div class="demo-card">
+                    <h3>⚡ Fonctionnalités Avancées</h3>
+                    <p>Cette implémentation inclut des fonctionnalités avancées comme l'overlay avec backdrop-filter, les animations de liens, et la responsivité complète.</p>
+                    
+                    <ul style="color: var(--text-secondary); padding-left: 1.5rem; margin: 1rem 0;">
+                        <li>Overlay avec backdrop-filter</li>
+                        <li>Animations de liens avec transform</li>
+                        <li>Icônes animées</li>
+                        <li>Gestion du focus clavier</li>
+                        <li>Navigation desktop adaptative</li>
+                        <li>Fermeture par clic sur overlay</li>
+                    </ul>
+
+                    <div class="code-snippet">
+<span class="comment">/* Overlay avec backdrop-filter */</span>
+<span class="property">.menu-overlay</span> {
+    <span class="property">backdrop-filter</span>: <span class="value">blur(5px)</span>;
+    <span class="property">background</span>: <span class="value">rgba(0, 0, 0, 0.6)</span>;
+}</div>
+                </div>
+
+                <!-- Demo 6: Techniques CSS -->
+                <div class="demo-card">
+                    <h3>🎯 Techniques CSS Utilisées</h3>
+                    <p>Ce menu hamburger utilise plusieurs techniques CSS avancées pour fonctionner sans JavaScript.</p>
+                    
+                    <ul style="color: var(--text-secondary); padding-left: 1.5rem; margin: 1rem 0;">
+                        <li><strong>Checkbox caché</strong> : Gestion de l'état ouvert/fermé</li>
+                        <li><strong>Transform</strong> : Rotation et translation des barres</li>
+                        <li><strong>Transitions CSS</strong> : Animations fluides</li>
+                        <li><strong>Position fixed</strong> : Header et menu overlay</li>
+                        <li><strong>Z-index</strong> : Gestion des couches</li>
+                        <li><strong>Pseudo-sélecteurs</strong> : :checked pour l'interactivité</li>
+                    </ul>
+
+                    <div class="code-snippet">
+<span class="comment">/* Checkbox caché pour l'état */</span>
+<span class="property">.menu-toggle</span> {
+    <span class="property">position</span>: <span class="value">absolute</span>;
+    <span class="property">opacity</span>: <span class="value">0</span>;
+    <span class="property">visibility</span>: <span class="value">hidden</span>;
+}
+
+<span class="comment">/* Transformation des barres */</span>
+<span class="property">.menu-toggle:checked ~ .header .hamburger-line:nth-child(1)</span> {
+    <span class="property">transform</span>: <span class="value">translateY(-50%) rotate(45deg)</span>;
+}</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</body>
+</html>
