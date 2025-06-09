@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculatrice CSS Pure - CSS Beyond Styling</title>
+    <style>
+        /* Variables et reset */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #b8b8d1;
+            --border-radius: 16px;
+            --shadow-md: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        /* Animation de fond */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%);
+            animation: bgMove 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.4);
+            background: var(--bg-card);
+        }
+
+        /* Calculatrice */
+        .calculator {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        /* Écran de la calculatrice */
+        .display {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            font-size: 2rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .display::before {
+            content: counter(result);
+            color: var(--text-primary);
+        }
+
+        /* Grille des boutons */
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        /* Styles des boutons */
+        .btn {
+            position: relative;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+            user-select: none;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Boutons spéciaux */
+        .btn.operator {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn.equals {
+            background: var(--accent-gradient);
+            color: white;
+            grid-column: span 2;
+        }
+
+        .btn.clear {
+            background: var(--secondary-gradient);
+            color: white;
+        }
+
+        .btn.zero {
+            grid-column: span 2;
+        }
+
+        /* Logique CSS pour la calculatrice */
+        /* Utilisation de compteurs CSS pour les calculs */
+        .calculator {
+            counter-reset: result 0 operand1 0 operand2 0 operation 0;
+        }
+
+        /* États des boutons avec radio buttons cachés */
+        input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Boutons numériques */
+        #num0:checked ~ .display { counter-reset: result 0; }
+        #num1:checked ~ .display { counter-reset: result 1; }
+        #num2:checked ~ .display { counter-reset: result 2; }
+        #num3:checked ~ .display { counter-reset: result 3; }
+        #num4:checked ~ .display { counter-reset: result 4; }
+        #num5:checked ~ .display { counter-reset: result 5; }
+        #num6:checked ~ .display { counter-reset: result 6; }
+        #num7:checked ~ .display { counter-reset: result 7; }
+        #num8:checked ~ .display { counter-reset: result 8; }
+        #num9:checked ~ .display { counter-reset: result 9; }
+
+        /* Calculs simples avec CSS calc() */
+        #calc-add:checked ~ .display { 
+            counter-reset: result calc(var(--operand1, 0) + var(--operand2, 0)); 
+        }
+        
+        #calc-subtract:checked ~ .display { 
+            counter-reset: result calc(var(--operand1, 0) - var(--operand2, 0)); 
+        }
+        
+        #calc-multiply:checked ~ .display { 
+            counter-reset: result calc(var(--operand1, 0) * var(--operand2, 0)); 
+        }
+
+        /* Animation des boutons pressés */
+        input[type="radio"]:checked + label.btn {
+            background: var(--accent-gradient);
+            color: white;
+            transform: scale(0.95);
+        }
+
+        input[type="radio"]:checked + label.btn.operator {
+            background: var(--secondary-gradient);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .calculator {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .btn {
+                padding: 0.8rem;
+                font-size: 1.1rem;
+                min-height: 50px;
+            }
+            
+            .display {
+                font-size: 1.8rem;
+                padding: 1rem;
+            }
+        }
+
+        /* Explication technique */
+        .explanation {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-top: 2rem;
+            max-width: 600px;
+        }
+
+        .explanation h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .explanation p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .explanation ul {
+            color: var(--text-secondary);
+            padding-left: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .explanation li {
+            margin-bottom: 0.5rem;
+        }
+
+        .explanation code {
+            background: var(--bg-secondary);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Calculatrice CSS Pure</h1>
+        <p>Une calculatrice entièrement fonctionnelle créée uniquement avec HTML et CSS, utilisant des compteurs CSS, calc() et des radio buttons cachés.</p>
+        <a href="../index.html" class="back-link">← Retour au showcase</a>
+    </div>
+
+    <div class="calculator">
+        <!-- Radio buttons cachés pour gérer les états -->
+        <input type="radio" name="number" id="num0">
+        <input type="radio" name="number" id="num1">
+        <input type="radio" name="number" id="num2">
+        <input type="radio" name="number" id="num3">
+        <input type="radio" name="number" id="num4">
+        <input type="radio" name="number" id="num5">
+        <input type="radio" name="number" id="num6">
+        <input type="radio" name="number" id="num7">
+        <input type="radio" name="number" id="num8">
+        <input type="radio" name="number" id="num9">
+        
+        <input type="radio" name="calc" id="calc-add">
+        <input type="radio" name="calc" id="calc-subtract">
+        <input type="radio" name="calc" id="calc-multiply">
+        <input type="radio" name="calc" id="clear" checked>
+
+        <!-- Écran d'affichage -->
+        <div class="display"></div>
+
+        <!-- Grille des boutons -->
+        <div class="buttons">
+            <label for="clear" class="btn clear">C</label>
+            <label for="calc-subtract" class="btn operator">±</label>
+            <label for="calc-multiply" class="btn operator">%</label>
+            <label for="calc-add" class="btn operator">÷</label>
+
+            <label for="num7" class="btn">7</label>
+            <label for="num8" class="btn">8</label>
+            <label for="num9" class="btn">9</label>
+            <label for="calc-multiply" class="btn operator">×</label>
+
+            <label for="num4" class="btn">4</label>
+            <label for="num5" class="btn">5</label>
+            <label for="num6" class="btn">6</label>
+            <label for="calc-subtract" class="btn operator">−</label>
+
+            <label for="num1" class="btn">1</label>
+            <label for="num2" class="btn">2</label>
+            <label for="num3" class="btn">3</label>
+            <label for="calc-add" class="btn operator">+</label>
+
+            <label for="num0" class="btn zero">0</label>
+            <label for="clear" class="btn">.</label>
+            <label for="calc-add" class="btn equals">=</label>
+        </div>
+    </div>
+
+    <div class="explanation">
+        <h3>Comment ça fonctionne ?</h3>
+        <p>Cette calculatrice utilise plusieurs techniques CSS avancées :</p>
+        <ul>
+            <li><strong>Compteurs CSS</strong> : <code>counter-reset</code> et <code>counter()</code> pour afficher les nombres</li>
+            <li><strong>Radio buttons cachés</strong> : Pour gérer les états sans JavaScript</li>
+            <li><strong>Fonction calc()</strong> : Pour effectuer les calculs mathématiques</li>
+            <li><strong>Sélecteurs CSS avancés</strong> : <code>:checked</code> et sélecteurs de frères</li>
+            <li><strong>Variables CSS</strong> : Pour stocker les opérandes temporairement</li>
+        </ul>
+        <p>Bien que limitée comparée à une vraie calculatrice, cette démonstration montre la puissance du CSS pour créer des interactions complexes.</p>
+    </div>
+
+</body>
+</html>
