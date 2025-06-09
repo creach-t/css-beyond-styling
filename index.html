@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Beyond Styling - Showcase</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <!-- Toggle Dark/Light Mode -->
+    <input type="checkbox" id="theme-toggle" class="theme-toggle" checked>
+    <label for="theme-toggle" class="theme-toggle-label">
+        <span class="sun-icon">☀️</span>
+        <span class="moon-icon">🌙</span>
+    </label>
+
+    <!-- Header principal -->
+    <header class="header">
+        <div class="container">
+            <h1 class="main-title">CSS Beyond Styling</h1>
+            <p class="subtitle">Découvrez les capacités avancées du CSS au-delà du simple styling</p>
+            <div class="header-decoration"></div>
+        </div>
+    </header>
+
+    <!-- Navigation principale -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-grid">
+                <a href="#demos" class="nav-link">Démonstrations</a>
+                <a href="#about" class="nav-link">À propos</a>
+                <a href="#code" class="nav-link">Code Source</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Section d'introduction -->
+    <section class="intro" id="about">
+        <div class="container">
+            <div class="intro-content">
+                <h2>CSS peut faire bien plus que du styling</h2>
+                <p>Cette collection de démonstrations prouve que CSS peut créer des interactions complexes, des calculs mathématiques, des jeux interactifs et bien plus encore, le tout sans une seule ligne de JavaScript.</p>
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-number">8</span>
+                        <span class="stat-label">Démonstrations</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">Lignes de JS</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">CSS Pur</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Grid des démonstrations -->
+    <section class="demos" id="demos">
+        <div class="container">
+            <h2 class="section-title">Démonstrations</h2>
+            <div class="demos-grid">
+                
+                <div class="demo-card">
+                    <div class="demo-icon">🧮</div>
+                    <h3>Calculatrice CSS</h3>
+                    <p>Une calculatrice entièrement fonctionnelle utilisant uniquement HTML et CSS</p>
+                    <a href="demos/calculator.html" class="demo-link">Voir la démo</a>
+                    <div class="demo-tech">CSS Counter • calc() • Sélecteurs avancés</div>
+                </div>
+
+                <div class="demo-card">
+                    <div class="demo-icon">📑</div>
+                    <h3>Système de Tabs</h3>
+                    <p>Onglets interactifs avec transitions fluides et indicateur animé</p>
+                    <a href="demos/tabs.html" class="demo-link">Voir la démo</a>
+                    <div class="demo-tech">Radio buttons • Transitions • Pseudo-éléments</div>
+                </div>
+
+                <div class="demo-card">
+                    <div class="demo-icon">📋</div>
+                    <h3>Accordéon</h3>
+                    <p>Sections expandables avec animations de hauteur et icônes rotatives</p>
+                    <a href="demos/accordion.html" class="demo-link">Voir la démo</a>
+                    <div class="demo-tech">Checkbox • max-height • Transform</div>
+                </div>
+
+                <div class="demo-card">
+                    <div class="demo-icon">🔲</div>
+                    <h3>Modal Pop-up</h3>
+                    <p>Modal avec overlay, backdrop-filter et animations d'entrée/sortie</p>
+                    <a href="demos/modal.html" class="demo-link">Voir la démo</a>
+                    <div class="demo-tech">Checkbox • backdrop-filter • Animations</div>
+                </div>
+
+                <div class="demo-card">
+                    <div class="demo-icon">🍔</div>
+                    <h3>Menu Hamburger</h3>
+                    <p>Menu mobile animé avec transformation des barres en croix</p>
+                    <a href="demos/hamburger.html" class="demo-link">Voir la démo</a>
+                    <div class="demo-tech">Transform • Transitions • Menu slide</div>
+                </div>
+
+                <div class="demo-card">
+                    <div class="demo-icon">🖼️</div>
+                    <h3>Slider d'Images</h3>
+                    <p>Carrousel navigable avec points de navigation et transitions automatiques</p>
+                    <a href="demos/slider.html" class="demo-link">Voir la démo</a>
+                    <div class="demo-tech">Radio buttons • Transform • Animations</div>
+                </div>
+
+                <div class="demo-card">
+                    <div class="demo-icon">🎯</div>
+                    <h3>Tic-Tac-Toe</h3>
+                    <p>Jeu complet avec détection de victoire et reset automatique</p>
+                    <a href="demos/tictactoe.html" class="demo-link">Voir la démo</a>
+                    <div class="demo-tech">Sélecteurs CSS • States • Logic CSS</div>
+                </div>
+
+                <div class="demo-card">
+                    <div class="demo-icon">🎚️</div>
+                    <h3>Toggle Switches</h3>
+                    <p>Interrupteurs animés style iOS et checkboxes personnalisées</p>
+                    <a href="demos/toggles.html" class="demo-link">Voir la démo</a>
+                    <div class="demo-tech">Checkbox styling • Animations • Accessibility</div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 CSS Beyond Styling. Démonstration des capacités avancées du CSS.</p>
+            <div class="footer-links">
+                <a href="https://github.com/creach-t/css-beyond-styling" target="_blank">Code Source</a>
+                <a href="#demos">Démonstrations</a>
+                <a href="#about">À propos</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loader CSS animé -->
+    <div class="loader" id="loader">
+        <div class="loader-spinner"></div>
+    </div>
+
+</body>
+</html>
