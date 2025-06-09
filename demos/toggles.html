@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toggle Switches CSS - CSS Beyond Styling</title>
+    <style>
+        /* Variables et reset */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #ff9a00 0%, #ff6b6b 100%);
+            --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #b8b8d1;
+            --text-muted: #8f8fb7;
+            --border-radius: 16px;
+            --shadow-md: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --shadow-lg: 0 16px 64px rgba(31, 38, 135, 0.5);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Animation de fond */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            animation: bgMove 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(0.5deg); }
+            66% { transform: translateY(20px) rotate(-0.5deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.4);
+            background: var(--bg-card);
+        }
+
+        /* Grid principal */
+        .demos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Cards de démonstration */
+        .demo-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .demo-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .demo-card p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        /* === TOGGLE SWITCHES STYLE IOS === */
+        .toggle-container {
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .toggle-input {
+            position: absolute;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 32px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-input:checked + .toggle-switch {
+            background: var(--success-gradient);
+            border-color: rgba(17, 153, 142, 0.5);
+        }
+
+        .toggle-input:checked + .toggle-switch::before {
+            transform: translateX(28px);
+        }
+
+        .toggle-switch:hover {
+            transform: scale(1.05);
+        }
+
+        .toggle-input:focus + .toggle-switch {
+            outline: 3px solid rgba(102, 126, 234, 0.6);
+            outline-offset: 2px;
+        }
+
+        /* Variantes de toggle */
+        .toggle-variant-2 {
+            background: var(--bg-secondary);
+            border: 2px solid var(--primary-gradient);
+        }
+
+        .toggle-variant-2::before {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .toggle-input:checked + .toggle-variant-2 {
+            background: var(--primary-gradient);
+        }
+
+        .toggle-variant-3 {
+            width: 80px;
+            height: 40px;
+            background: var(--bg-secondary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toggle-variant-3::before {
+            width: 30px;
+            height: 30px;
+            top: 3px;
+            background: var(--warning-gradient);
+        }
+
+        .toggle-input:checked + .toggle-variant-3::before {
+            transform: translateX(38px);
+        }
+
+        .toggle-variant-3::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 8px;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>') no-repeat center;
+            background-size: contain;
+            transition: var(--transition);
+            opacity: 1;
+        }
+
+        .toggle-input:checked + .toggle-variant-3::after {
+            left: 54px;
+            opacity: 0;
+        }
+
+        /* === CHECKBOXES PERSONNALISÉES === */
+        .checkbox-container {
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+        }
+
+        .checkbox-input {
+            position: absolute;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .checkbox-custom {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            background: var(--bg-secondary);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .checkbox-custom::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+
+        .checkbox-input:checked + .checkbox-custom {
+            background: var(--primary-gradient);
+            border-color: rgba(102, 126, 234, 0.8);
+        }
+
+        .checkbox-input:checked + .checkbox-custom::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .checkbox-custom:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: scale(1.1);
+        }
+
+        .checkbox-input:focus + .checkbox-custom {
+            outline: 3px solid rgba(102, 126, 234, 0.6);
+            outline-offset: 2px;
+        }
+
+        /* Checkbox avec coche animée */
+        .checkbox-checkmark {
+            background: transparent;
+            border-radius: 4px;
+        }
+
+        .checkbox-checkmark::before {
+            content: '✓';
+            font-size: 16px;
+            font-weight: bold;
+            color: transparent;
+            width: auto;
+            height: auto;
+            background: none;
+            border-radius: 0;
+            transform: translate(-50%, -50%) scale(0) rotate(-45deg);
+        }
+
+        .checkbox-input:checked + .checkbox-checkmark {
+            background: var(--success-gradient);
+            border-color: rgba(17, 153, 142, 0.8);
+        }
+
+        .checkbox-input:checked + .checkbox-checkmark::before {
+            color: white;
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        }
+
+        /* Checkbox style moderne */
+        .checkbox-modern {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .checkbox-modern::before {
+            content: '';
+            width: 14px;
+            height: 14px;
+            background: var(--secondary-gradient);
+            border-radius: 50%;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+        }
+
+        .checkbox-input:checked + .checkbox-modern {
+            border-color: rgba(240, 147, 251, 0.8);
+        }
+
+        .checkbox-input:checked + .checkbox-modern::before {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* === RADIO BUTTONS PERSONNALISÉS === */
+        .radio-container {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+        }
+
+        .radio-input {
+            position: absolute;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .radio-custom {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            background: var(--bg-secondary);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .radio-custom::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .radio-input:checked + .radio-custom {
+            background: var(--accent-gradient);
+            border-color: rgba(79, 172, 254, 0.8);
+        }
+
+        .radio-input:checked + .radio-custom::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .radio-custom:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: scale(1.1);
+        }
+
+        .radio-input:focus + .radio-custom {
+            outline: 3px solid rgba(79, 172, 254, 0.6);
+            outline-offset: 2px;
+        }
+
+        /* Labels */
+        .control-label {
+            color: var(--text-primary);
+            font-weight: 500;
+            user-select: none;
+            flex: 1;
+        }
+
+        /* === SLIDERS (RANGE) === */
+        .range-container {
+            margin: 1.5rem 0;
+        }
+
+        .range-input {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: var(--transition);
+        }
+
+        .range-input::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .range-input::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: var(--transition);
+        }
+
+        .range-input::-moz-range-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Code snippets */
+        .code-snippet {
+            background: #1e1e2e;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+            color: #a6e3a1;
+            overflow-x: auto;
+        }
+
+        .code-snippet .comment {
+            color: #6c7086;
+        }
+
+        .code-snippet .property {
+            color: #89b4fa;
+        }
+
+        .code-snippet .value {
+            color: #f9e2af;
+        }
+
+        /* Section de démonstration interactive */
+        .interactive-demo {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .demo-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .demo-row:last-child {
+            border-bottom: none;
+        }
+
+        .demo-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .demo-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* States display */
+        .state-display {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .state-on {
+            background: var(--success-gradient);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .state-off {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .demos-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .demo-card {
+                padding: 1.5rem;
+            }
+            
+            .demo-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .toggle-container,
+            .checkbox-container,
+            .radio-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Animation sur changement d'état */
+        .toggle-switch,
+        .checkbox-custom,
+        .radio-custom {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toggle-switch::after,
+        .checkbox-custom::after,
+        .radio-custom::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: var(--transition);
+        }
+
+        .toggle-input:checked + .toggle-switch::after,
+        .checkbox-input:checked + .checkbox-custom::after,
+        .radio-input:checked + .radio-custom::after {
+            width: 100px;
+            height: 100px;
+            opacity: 0;
+        }
+
+        /* Labels avec états */
+        .label-with-state {
+            position: relative;
+        }
+
+        .label-with-state::after {
+            content: ' (OFF)';
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .toggle-input:checked ~ .label-with-state::after,
+        .checkbox-input:checked ~ .label-with-state::after {
+            content: ' (ON)';
+            color: var(--success-gradient);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Toggle Switches CSS</h1>
+            <p>Interrupteurs animés style iOS, checkboxes personnalisées et controls avec accessibilité. Démonstration complète des contrôles de formulaire en CSS pur.</p>
+            <a href="../index.html" class="back-link">← Retour au showcase</a>
+        </div>
+
+        <div class="demos-grid">
+            <!-- Toggle Switches iOS Style -->
+            <div class="demo-card">
+                <h3>🎚️ Toggle Switches iOS</h3>
+                <p>Interrupteurs animés inspirés du design iOS avec transitions fluides et animations de feedback.</p>
+                
+                <div class="toggle-container">
+                    <input type="checkbox" id="toggle1" class="toggle-input">
+                    <label for="toggle1" class="toggle-switch"></label>
+                    <label for="toggle1" class="control-label label-with-state">Notifications</label>
+                </div>
+
+                <div class="toggle-container">
+                    <input type="checkbox" id="toggle2" class="toggle-input" checked>
+                    <label for="toggle2" class="toggle-switch toggle-variant-2"></label>
+                    <label for="toggle2" class="control-label label-with-state">Mode sombre</label>
+                </div>
+
+                <div class="toggle-container">
+                    <input type="checkbox" id="toggle3" class="toggle-input">
+                    <label for="toggle3" class="toggle-switch toggle-variant-3"></label>
+                    <label for="toggle3" class="control-label label-with-state">Économie d'énergie</label>
+                </div>
+
+                <div class="code-snippet">
+<span class="comment">/* Toggle Switch iOS Style */</span>
+<span class="property">.toggle-switch</span> {
+    <span class="property">width</span>: <span class="value">60px</span>;
+    <span class="property">height</span>: <span class="value">32px</span>;
+    <span class="property">background</span>: <span class="value">rgba(255,255,255,0.2)</span>;
+    <span class="property">border-radius</span>: <span class="value">32px</span>;
+    <span class="property">transition</span>: <span class="value">all 0.3s ease</span>;
+}
+
+<span class="property">.toggle-input:checked + .toggle-switch</span> {
+    <span class="property">background</span>: <span class="value">var(--success-gradient)</span>;
+}</div>
+            </div>
+
+            <!-- Checkboxes Personnalisées -->
+            <div class="demo-card">
+                <h3>☑️ Checkboxes Personnalisées</h3>
+                <p>Checkboxes avec animations personnalisées, différents styles et feedback visuel.</p>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="check1" class="checkbox-input">
+                    <label for="check1" class="checkbox-custom"></label>
+                    <label for="check1" class="control-label">Style carré classique</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="check2" class="checkbox-input" checked>
+                    <label for="check2" class="checkbox-custom checkbox-checkmark"></label>
+                    <label for="check2" class="control-label">Avec coche animée</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="check3" class="checkbox-input">
+                    <label for="check3" class="checkbox-custom checkbox-modern"></label>
+                    <label for="check3" class="control-label">Style moderne circulaire</label>
+                </div>
+
+                <div class="code-snippet">
+<span class="comment">/* Checkbox avec coche animée */</span>
+<span class="property">.checkbox-checkmark::before</span> {
+    <span class="property">content</span>: <span class="value">'✓'</span>;
+    <span class="property">transform</span>: <span class="value">scale(0) rotate(-45deg)</span>;
+    <span class="property">transition</span>: <span class="value">all 0.3s ease</span>;
+}
+
+<span class="property">.checkbox-input:checked + .checkbox-checkmark::before</span> {
+    <span class="property">transform</span>: <span class="value">scale(1) rotate(0deg)</span>;
+}</div>
+            </div>
+
+            <!-- Radio Buttons -->
+            <div class="demo-card">
+                <h3>🔘 Radio Buttons Stylés</h3>
+                <p>Radio buttons personnalisés avec animations et états visuels clairs.</p>
+                
+                <div class="radio-container">
+                    <input type="radio" name="theme" id="radio1" class="radio-input" checked>
+                    <label for="radio1" class="radio-custom"></label>
+                    <label for="radio1" class="control-label">Thème sombre</label>
+                </div>
+
+                <div class="radio-container">
+                    <input type="radio" name="theme" id="radio2" class="radio-input">
+                    <label for="radio2" class="radio-custom"></label>
+                    <label for="radio2" class="control-label">Thème clair</label>
+                </div>
+
+                <div class="radio-container">
+                    <input type="radio" name="theme" id="radio3" class="radio-input">
+                    <label for="radio3" class="radio-custom"></label>
+                    <label for="radio3" class="control-label">Thème automatique</label>
+                </div>
+
+                <div class="code-snippet">
+<span class="comment">/* Radio Button personnalisé */</span>
+<span class="property">.radio-custom</span> {
+    <span class="property">border-radius</span>: <span class="value">50%</span>;
+    <span class="property">border</span>: <span class="value">2px solid rgba(255,255,255,0.3)</span>;
+}
+
+<span class="property">.radio-input:checked + .radio-custom</span> {
+    <span class="property">background</span>: <span class="value">var(--accent-gradient)</span>;
+}</div>
+            </div>
+
+            <!-- Range Sliders -->
+            <div class="demo-card">
+                <h3>🎛️ Range Sliders</h3>
+                <p>Sliders personnalisés avec thumbs animés et feedback visuel.</p>
+                
+                <div class="range-container">
+                    <label class="control-label">Volume : <span id="volume-value">50</span>%</label>
+                    <input type="range" min="0" max="100" value="50" class="range-input" id="volume">
+                </div>
+
+                <div class="range-container">
+                    <label class="control-label">Luminosité : <span id="brightness-value">75</span>%</label>
+                    <input type="range" min="0" max="100" value="75" class="range-input" id="brightness">
+                </div>
+
+                <div class="range-container">
+                    <label class="control-label">Contraste : <span id="contrast-value">25</span>%</label>
+                    <input type="range" min="0" max="100" value="25" class="range-input" id="contrast">
+                </div>
+
+                <div class="code-snippet">
+<span class="comment">/* Range Slider personnalisé */</span>
+<span class="property">.range-input::-webkit-slider-thumb</span> {
+    <span class="property">width</span>: <span class="value">24px</span>;
+    <span class="property">height</span>: <span class="value">24px</span>;
+    <span class="property">background</span>: <span class="value">var(--primary-gradient)</span>;
+    <span class="property">border-radius</span>: <span class="value">50%</span>;
+    <span class="property">box-shadow</span>: <span class="value">0 4px 12px rgba(102,126,234,0.4)</span>;
+}</div>
+            </div>
+
+            <!-- Démonstration Interactive -->
+            <div class="demo-card">
+                <h3>🎮 Démonstration Interactive</h3>
+                <p>Testez tous les contrôles et voyez leurs états en temps réel.</p>
+                
+                <div class="interactive-demo">
+                    <div class="demo-row">
+                        <div>
+                            <div class="demo-label">Wi-Fi</div>
+                            <div class="demo-description">Connexion sans fil</div>
+                        </div>
+                        <div class="toggle-container">
+                            <input type="checkbox" id="wifi" class="toggle-input" checked>
+                            <label for="wifi" class="toggle-switch"></label>
+                        </div>
+                    </div>
+
+                    <div class="demo-row">
+                        <div>
+                            <div class="demo-label">Bluetooth</div>
+                            <div class="demo-description">Connexion appareils</div>
+                        </div>
+                        <div class="toggle-container">
+                            <input type="checkbox" id="bluetooth" class="toggle-input">
+                            <label for="bluetooth" class="toggle-switch"></label>
+                        </div>
+                    </div>
+
+                    <div class="demo-row">
+                        <div>
+                            <div class="demo-label">Localisation</div>
+                            <div class="demo-description">Services de géolocalisation</div>
+                        </div>
+                        <div class="toggle-container">
+                            <input type="checkbox" id="location" class="toggle-input" checked>
+                            <label for="location" class="toggle-switch"></label>
+                        </div>
+                    </div>
+
+                    <div class="demo-row">
+                        <div>
+                            <div class="demo-label">Mode avion</div>
+                            <div class="demo-description">Désactive toutes les connexions</div>
+                        </div>
+                        <div class="toggle-container">
+                            <input type="checkbox" id="airplane" class="toggle-input">
+                            <label for="airplane" class="toggle-switch"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Techniques et Accessibilité -->
+            <div class="demo-card">
+                <h3>♿ Accessibilité & Techniques</h3>
+                <p>Ces contrôles respectent les standards d'accessibilité et utilisent des techniques CSS avancées.</p>
+                
+                <ul style="color: var(--text-secondary); padding-left: 1.5rem; margin: 1rem 0; line-height: 1.8;">
+                    <li><strong>Navigation clavier :</strong> Tab, Espace, Entrée</li>
+                    <li><strong>Focus visible :</strong> Outline pour les lecteurs d'écran</li>
+                    <li><strong>Labels associés :</strong> for/id pour l'accessibilité</li>
+                    <li><strong>États ARIA :</strong> Communiqués aux assistants</li>
+                    <li><strong>Contraste suffisant :</strong> Respect WCAG 2.1</li>
+                    <li><strong>Animations respectueuses :</strong> prefers-reduced-motion</li>
+                </ul>
+
+                <div class="code-snippet">
+<span class="comment">/* Accessibilité focus */</span>
+<span class="property">.toggle-input:focus + .toggle-switch</span> {
+    <span class="property">outline</span>: <span class="value">3px solid rgba(102,126,234,0.6)</span>;
+    <span class="property">outline-offset</span>: <span class="value">2px</span>;
+}
+
+<span class="comment">/* Respect des préférences utilisateur */</span>
+<span class="property">@media (prefers-reduced-motion: reduce)</span> {
+    <span class="property">*</span> {
+        <span class="property">transition-duration</span>: <span class="value">0.01ms !important</span>;
+    }
+}</div>
+
+                <div style="background: rgba(17, 153, 142, 0.1); border: 1px solid rgba(17, 153, 142, 0.3); border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+                    <p style="margin: 0; color: var(--text-secondary);"><strong>✅ Avantages CSS :</strong> Aucun JavaScript requis, performance optimale, accessibilité native, et styling cohérent sur tous les navigateurs modernes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Script minimal pour la démo interactive des ranges
+        document.getElementById('volume').addEventListener('input', function() {
+            document.getElementById('volume-value').textContent = this.value;
+        });
+        
+        document.getElementById('brightness').addEventListener('input', function() {
+            document.getElementById('brightness-value').textContent = this.value;
+        });
+        
+        document.getElementById('contrast').addEventListener('input', function() {
+            document.getElementById('contrast-value').textContent = this.value;
+        });
+    </script>
+</body>
+</html>
