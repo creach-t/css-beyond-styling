@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accordéon CSS - CSS Beyond Styling</title>
+    <style>
+        /* Variables et reset */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #b8b8d1;
+            --text-muted: #8f8fb7;
+            --border-radius: 16px;
+            --shadow-md: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Animation de fond */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            animation: bgMove 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(0.5deg); }
+            66% { transform: translateY(20px) rotate(-0.5deg); }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.4);
+            background: var(--bg-card);
+        }
+
+        /* Container de l'accordéon */
+        .accordion {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Items de l'accordéon */
+        .accordion-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Checkbox caché pour contrôler l'état */
+        .accordion-checkbox {
+            position: absolute;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Header de chaque item */
+        .accordion-header {
+            display: block;
+            width: 100%;
+            padding: 1.5rem 2rem;
+            background: transparent;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            user-select: none;
+        }
+
+        .accordion-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* État actif du header */
+        .accordion-checkbox:checked + .accordion-header {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Titre du header */
+        .accordion-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Icône flèche */
+        .accordion-icon {
+            width: 24px;
+            height: 24px;
+            transition: var(--transition-slow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .accordion-icon::before {
+            content: '+';
+            transition: var(--transition-slow);
+        }
+
+        /* Rotation de l'icône quand ouvert */
+        .accordion-checkbox:checked + .accordion-header .accordion-icon {
+            transform: rotate(45deg);
+            background: var(--secondary-gradient);
+        }
+
+        /* Contenu de l'accordéon */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--bg-secondary);
+        }
+
+        /* État ouvert */
+        .accordion-checkbox:checked ~ .accordion-content {
+            max-height: 1000px; /* Valeur large pour accommoder tout contenu */
+        }
+
+        /* Padding interne du contenu */
+        .accordion-content-inner {
+            padding: 2rem;
+            transform: translateY(-10px);
+            opacity: 0;
+            transition: var(--transition-slow);
+        }
+
+        .accordion-checkbox:checked ~ .accordion-content .accordion-content-inner {
+            transform: translateY(0);
+            opacity: 1;
+            transition-delay: 0.2s;
+        }
+
+        /* Styles du contenu */
+        .accordion-content h4 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .accordion-content p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .accordion-content ul {
+            color: var(--text-secondary);
+            padding-left: 1.5rem;
+        }
+
+        .accordion-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Card spéciale dans le contenu */
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        .feature-card h5 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        /* Code snippets */
+        .code-snippet {
+            background: #1e1e2e;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            color: #a6e3a1;
+            overflow-x: auto;
+        }
+
+        .code-snippet .comment {
+            color: #6c7086;
+        }
+
+        .code-snippet .property {
+            color: #89b4fa;
+        }
+
+        .code-snippet .value {
+            color: #f9e2af;
+        }
+
+        /* Animation de highlight */
+        .highlight {
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.2), transparent);
+            background-size: 200% 100%;
+            animation: highlight 2s ease-in-out;
+        }
+
+        @keyframes highlight {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Badge technique */
+        .tech-badge {
+            display: inline-block;
+            background: var(--accent-gradient);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0.2rem;
+        }
+
+        /* Stats dans les items */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .accordion-header {
+                padding: 1rem 1.5rem;
+            }
+            
+            .accordion-content-inner {
+                padding: 1.5rem;
+            }
+            
+            .accordion-title {
+                font-size: 1.1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .accordion-header {
+                padding: 1rem;
+            }
+            
+            .accordion-content-inner {
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Effets de focus pour l'accessibilité */
+        .accordion-header:focus {
+            outline: 2px solid rgba(102, 126, 234, 0.6);
+            outline-offset: -2px;
+        }
+
+        /* Animation de pulse pour les éléments nouveaux */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Accordéon CSS</h1>
+            <p>Sections expandables avec animations fluides, icônes rotatives et transitions élégantes. Démonstration des capacités d'animation CSS avec max-height et transform.</p>
+            <a href="../index.html" class="back-link">← Retour au showcase</a>
+        </div>
+
+        <div class="accordion">
+            <!-- Item 1: Introduction -->
+            <div class="accordion-item">
+                <input type="checkbox" id="item1" class="accordion-checkbox">
+                <label for="item1" class="accordion-header">
+                    <div class="accordion-title">
+                        <span>🎯 Introduction à l'Accordéon CSS</span>
+                        <div class="accordion-icon"></div>
+                    </div>
+                </label>
+                <div class="accordion-content">
+                    <div class="accordion-content-inner">
+                        <h4>Qu'est-ce qu'un accordéon CSS ?</h4>
+                        <p>Un accordéon est un composant d'interface utilisateur qui permet d'organiser du contenu en sections pliables. Cette implémentation utilise uniquement HTML et CSS pour créer une expérience interactive fluide.</p>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-number">0</span>
+                                <span class="stat-label">Lignes JS</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">100%</span>
+                                <span class="stat-label">CSS</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">5</span>
+                                <span class="stat-label">Animations</span>
+                            </div>
+                        </div>
+
+                        <div class="feature-card">
+                            <h5>✨ Fonctionnalités clés</h5>
+                            <p>Animations fluides, états multiples, responsive design, et accessibilité intégrée avec gestion du focus clavier.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 2: Techniques CSS -->
+            <div class="accordion-item">
+                <input type="checkbox" id="item2" class="accordion-checkbox">
+                <label for="item2" class="accordion-header">
+                    <div class="accordion-title">
+                        <span>⚙️ Techniques CSS Utilisées</span>
+                        <div class="accordion-icon"></div>
+                    </div>
+                </label>
+                <div class="accordion-content">
+                    <div class="accordion-content-inner">
+                        <h4>Technologies et méthodes employées</h4>
+                        <p>Cette implémentation combine plusieurs techniques CSS avancées pour créer une expérience utilisateur fluide et moderne.</p>
+                        
+                        <div class="tech-badge">:checked</div>
+                        <div class="tech-badge">max-height</div>
+                        <div class="tech-badge">transform</div>
+                        <div class="tech-badge">transition</div>
+                        <div class="tech-badge">cubic-bezier</div>
+
+                        <div class="code-snippet">
+<span class="comment">/* Animation de l'ouverture */</span>
+<span class="property">.accordion-content</span> {
+    <span class="property">max-height</span>: <span class="value">0</span>;
+    <span class="property">transition</span>: <span class="value">max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1)</span>;
+}
+
+<span class="property">.accordion-checkbox:checked ~ .accordion-content</span> {
+    <span class="property">max-height</span>: <span class="value">1000px</span>;
+}
+                        </div>
+
+                        <ul>
+                            <li><strong>Checkbox cachés</strong> : Gestion des états d'ouverture/fermeture</li>
+                            <li><strong>Max-height</strong> : Animation fluide de la hauteur</li>
+                            <li><strong>Transform</strong> : Rotation des icônes et micro-animations</li>
+                            <li><strong>Transition-delay</strong> : Coordination des animations</li>
+                            <li><strong>Cubic-bezier</strong> : Courbes d'animation personnalisées</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 3: Avantages -->
+            <div class="accordion-item">
+                <input type="checkbox" id="item3" class="accordion-checkbox">
+                <label for="item3" class="accordion-header">
+                    <div class="accordion-title">
+                        <span>🚀 Avantages du CSS Pur</span>
+                        <div class="accordion-icon"></div>
+                    </div>
+                </label>
+                <div class="accordion-content">
+                    <div class="accordion-content-inner">
+                        <h4>Pourquoi choisir une approche CSS pure ?</h4>
+                        <p>L'utilisation exclusive de CSS pour créer des accordéons présente de nombreux avantages par rapport aux solutions JavaScript traditionnelles.</p>
+                        
+                        <div class="feature-card highlight">
+                            <h5>⚡ Performance Optimale</h5>
+                            <p>Aucun JavaScript à charger ou exécuter, ce qui améliore significativement les temps de chargement et la fluidité des animations.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <h5>🎯 Accessibilité Native</h5>
+                            <p>Les éléments form natifs (checkbox) offrent une meilleure accessibilité clavier et compatibilité avec les lecteurs d'écran.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <h5>📱 Responsive par Design</h5>
+                            <p>Les animations CSS s'adaptent automatiquement à tous les appareils sans configuration supplémentaire.</p>
+                        </div>
+
+                        <div class="feature-card pulse">
+                            <h5>🔧 Maintenance Simplifiée</h5>
+                            <p>Moins de code à maintenir, pas de dépendances JavaScript, et debugging plus simple avec les outils de développement CSS.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 4: Cas d'usage -->
+            <div class="accordion-item">
+                <input type="checkbox" id="item4" class="accordion-checkbox">
+                <label for="item4" class="accordion-header">
+                    <div class="accordion-title">
+                        <span>💼 Cas d'Usage Pratiques</span>
+                        <div class="accordion-icon"></div>
+                    </div>
+                </label>
+                <div class="accordion-content">
+                    <div class="accordion-content-inner">
+                        <h4>Applications concrètes des accordéons CSS</h4>
+                        <p>Les accordéons CSS peuvent être utilisés dans de nombreux contextes pour améliorer l'expérience utilisateur et l'organisation du contenu.</p>
+                        
+                        <ul>
+                            <li><strong>FAQ dynamiques</strong> : Questions-réponses expandables</li>
+                            <li><strong>Menus de navigation</strong> : Navigation mobile et sous-menus</li>
+                            <li><strong>Panels d'administration</strong> : Organisation de tableaux de bord</li>
+                            <li><strong>Documentation</strong> : Sections de guide utilisateur</li>
+                            <li><strong>Portfolios</strong> : Présentation organisée de projets</li>
+                            <li><strong>E-commerce</strong> : Filtres de produits et descriptions</li>
+                        </ul>
+
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-number">85%</span>
+                                <span class="stat-label">Sites Web</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">92%</span>
+                                <span class="stat-label">Mobile Apps</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">78%</span>
+                                <span class="stat-label">Dashboards</span>
+                            </div>
+                        </div>
+
+                        <div class="feature-card">
+                            <h5>🎨 Personnalisation Infinie</h5>
+                            <p>Variables CSS, thèmes dynamiques, et adaptation facile aux chartes graphiques existantes.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 5: Limitations et alternatives -->
+            <div class="accordion-item">
+                <input type="checkbox" id="item5" class="accordion-checkbox">
+                <label for="item5" class="accordion-header">
+                    <div class="accordion-title">
+                        <span>⚠️ Limitations & Alternatives</span>
+                        <div class="accordion-icon"></div>
+                    </div>
+                </label>
+                <div class="accordion-content">
+                    <div class="accordion-content-inner">
+                        <h4>Quand utiliser CSS vs JavaScript</h4>
+                        <p>Bien que puissant, l'accordéon CSS a ses limites. Il est important de comprendre quand choisir cette approche.</p>
+                        
+                        <div class="feature-card">
+                            <h5>✅ Idéal pour :</h5>
+                            <ul>
+                                <li>Contenu statique ou semi-statique</li>
+                                <li>Sites à performance critique</li>
+                                <li>Projets sans framework JavaScript</li>
+                                <li>Prototypage rapide</li>
+                            </ul>
+                        </div>
+
+                        <div class="feature-card">
+                            <h5>❌ Limitations :</h5>
+                            <ul>
+                                <li>Contenu dynamique complexe</li>
+                                <li>Logique métier avancée</li>
+                                <li>Synchronisation avec APIs</li>
+                                <li>Animations très complexes</li>
+                            </ul>
+                        </div>
+
+                        <div class="code-snippet">
+<span class="comment">/* Alternative JavaScript moderne */</span>
+<span class="property">element.style.maxHeight</span> = <span class="value">element.scrollHeight + 'px'</span>;
+                        </div>
+
+                        <p>Pour des besoins plus avancés, considérez les frameworks modernes comme React, Vue, ou les Web Components natifs qui offrent plus de flexibilité pour les interactions complexes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
